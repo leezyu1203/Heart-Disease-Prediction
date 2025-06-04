@@ -95,16 +95,6 @@ with st.form("form", enter_to_submit=False, border=False):
     else:
       true_false_cols = ['Smoking', 'AlcoholDrinking', 'PhysicalActivity', 'DiffWalking', 'Stroke', 'KidneyDisease', 'Asthma', 'SkinCancer']
       df_in[true_false_cols] = df_in[true_false_cols].replace([True, False], [1, 0])
-      df_in['Sex'] = df_in['Sex'].replace(['Female', 'Male'], [0, 1])
-      diabetic_category = {'No': 0, 'Yes': 1, 'No, borderline diabetes': 2, 'Yes (during pregnancy)': 3}
-      df_in['Diabetic'] = df_in['Diabetic'].map(diabetic_category)
-      age_category = {'18-24': 0, '25-29': 1, '30-34': 2, '35-39': 3, '40-44': 4, '45-49': 5, '50-54': 6, '55-59': 7, '60-64': 8, '65-69': 9, '70-74': 10, '75-79': 11, '80 or older': 12}
-      df_in['AgeCategory'] = df_in['AgeCategory'].map(age_category)
-      race_category = {'White': 0, 'Black': 1, 'Asian': 2, 'American Indian/Alaskan Native': 3, 'Hispanic': 4, 'Other': 5}
-      df_in['Race'] = df_in['Race'].map(race_category)
-      gen_health_category = {'Poor': 0, 'Fair': 1, 'Good': 2, 'Very good': 3, 'Excellent': 4}
-      df_in['GenHealth'] = df_in['GenHealth'].map(gen_health_category)
-      print(df_in)
       try:
         prediction = model.predict(df_in)[0]
         prediction_proba = model.predict_proba(df_in)[0]
