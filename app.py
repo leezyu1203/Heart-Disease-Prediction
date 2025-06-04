@@ -57,32 +57,32 @@ with st.form("form", enter_to_submit=False, border=False):
       placeholder="Select your race"
     )]
     df_in["BMI"] = [st.number_input("BMI", 10.0, 50.0)]
-  df_in["SleepTime"] = [st.slider("Sleep Time", 1, 12, 8)]
+  df_in["SleepTime"] = [st.slider("On average, how many hours of sleep do you get in a 24-hour period?", 1, 12, 8)]
 
   st.subheader("Habits")
-  df_in["Smoking"] = [st.toggle("Do you smoking?")]
-  df_in["AlcoholDrinking"] = [st.toggle("Do you drink?")]
-  df_in["PhysicalActivity"] = [st.toggle("Do you excercise usually?")]
+  df_in["Smoking"] = [st.toggle("Have you smoked at least once in the past 30 days?")]
+  df_in["AlcoholDrinking"] = [st.toggle("Have you had at least one drink of alcohol in the past 30 days?")]
+  df_in["PhysicalActivity"] = [st.toggle("Have you participated in any physical activities or exercises in the past 30 days?")]
 
   st.subheader("Health Status and History")
-  df_in["DiffWalking"] = [st.toggle("Do you have issue on walking?")]
+  df_in["DiffWalking"] = [st.toggle("Do you have serious difficulty walking or climbing stairs?")]
   df_in["GenHealth"] = [st.selectbox(
-    "General Health",
+    "Would you say that in general your health is...",
     ("Poor", "Fair", "Good", "Very good", "Excellent"),
     index=None,
     placeholder="Select your general health status",
   )]
   col3, col4 = st.columns(2)
   with col3:
-    df_in["PhysicalHealth"] = [st.number_input("Physical Health", 0)]
-    df_in["Stroke"] = [st.toggle("Stroke")]
-    df_in["KidneyDisease"] = [st.toggle("Kidney Disease")]
+    df_in["PhysicalHealth"] = [st.number_input("How many days during the past 30 days was your physical health not good?", 0)]
+    df_in["Stroke"] = [st.toggle("Do you have a history of stroke?")]
+    df_in["KidneyDisease"] = [st.toggle("Do you currently suffer from or have a history of kidney disease?")]
   with col4: 
-    df_in["MentalHealth"] = [st.number_input("Mental Health", 0)]
-    df_in["Asthma"] = [st.toggle("Asthma")]
-    df_in['SkinCancer'] = [st.toggle("Skin Cancer")]
+    df_in["MentalHealth"] = [st.number_input("How many days during the past 30 days was your mental health not good?", 0)]
+    df_in["Asthma"] = [st.toggle("Do you have asthma?")]
+    df_in['SkinCancer'] = [st.toggle("Do you currently suffer from or have a history of skin cancer?")]
   df_in["Diabetic"] = [st.selectbox(
-    "Diabetic",
+    "Do you currently suffer from diabetes?",
     ("Yes", "No", "No, borderline diabetes", "Yes (during pragnancy)"),
     index=None,
     placeholder="Diabetic"
