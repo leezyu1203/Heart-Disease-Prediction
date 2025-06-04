@@ -1,0 +1,118 @@
+from sklearn import pipeline
+import streamlit as st
+import joblib
+import pandas as pd
+
+try:
+  model = joblib.load('prediction_model.pkl')
+except FileNotFoundError:
+  st.error("Model file 'pridiction_model.pkl' not found. Please ensure it's in the correct directory.")
+  st.stop() # Stop the app if model isn't found
+
+df_in = pd.DataFrame()
+
+@st.dialog("Please complete the form")
+def hasNullDialog():
+  st.write("Incomplete infomation: ", df_in.columns[df_in.isnull().any()])
+  return
+
+st.set_page_config(
+  page_title="Heart Disease Prediction",
+  layout="centered"
+)
+
+st.markdown("""
+  <style>
+    .appview-container {
+      background-color: #faf8f1;
+    }
+    .stAppHeader {
+      background-color: #fac9c9;
+    }
+  </style>
+""", unsafe_allow_html=True)
+
+st.title("Heart Disease Prediction")
+
+with st.form("form", enter_to_submit=False, border=False):
+  col1, col2 = st.columns(2)
+  with col1: 
+    df_in["Sex"] = [st.selectbox(
+      "Sex",
+      ("Female", "Male"),
+      index=None,
+      placeholder="Select your gender"
+    )]
+    df_in["AgeCategory"] = [st.selectbox(
+      "Age Category",
+      ("18-24", "25-29", "30-34", "35-39","40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80 or older"),
+      index=None,
+      placeholder="Select your age category"
+    )]
+  with col2:
+    df_in["Race"] = [st.selectbox(
+      "Race",
+      ("White", "Black", "Asian", "American Indian/Alaskan Native", "Hispanic", "Other"),
+      index=None,
+      placeholder="Select your race"
+    )]
+    df_in["BMI"] = [st.number_input("BMI", 10.0, 50.0)]
+  df_in["SleepTime"] = [st.slider("Sleep Time", 1, 12, 8)]
+
+  st.subheader("Habits")
+  df_in["Smoking"] = [st.toggle("Do you smoking?")]
+  df_in["AlcoholDrinking"] = [st.toggle("Do you drink?")]
+  df_in["PhysicalActivity"] = [st.toggle("Do you excercise usually?")]
+
+  st.subheader("Health Status and History")
+  df_in["DiffWalking"] = [st.toggle("Do you have issue on walking?")]
+  df_in["GenHealth"] = [st.selectbox(
+    "General Health",
+    ("Poor", "Fair", "Good", "Very good", "Excellent"),
+    index=None,
+    placeholder="Select your general health status",
+  )]
+  col3, col4 = st.columns(2)
+  with col3:
+    df_in["PhysicalHealth"] = [st.number_input("Physical Health", 0)]
+    df_in["Stroke"] = [st.toggle("Stroke")]
+    df_in["KidneyDisease"] = [st.toggle("Kidney Disease")]
+  with col4: 
+    df_in["MentalHealth"] = [st.number_input("Mental Health", 0)]
+    df_in["Asthma"] = [st.toggle("Asthma")]
+    df_in['SkinCancer'] = [st.toggle("Skin Cancer")]
+  df_in["Diabetic"] = [st.selectbox(
+    "Diabetic",
+    ("Yes", "No", "No, borderline diabetes", "Yes (during pragnancy)"),
+    index=None,
+    placeholder="Diabetic"
+  )]
+
+  submit = st.form_submit_button("Submit")
+  if submit:
+    if df_in.isnull().any().any():
+      hasNullDialog()
+    else:
+      true_false_cols = ['Smoking', 'AlcoholDrinking', 'PhysicalActivity', 'DiffWalking', 'Stroke', 'KidneyDisease', 'Asthma', 'SkinCancer']
+      df_in[true_false_cols] = df_in[true_false_cols].replace([True, False], [1, 0])
+      df_in['Sex'] = df_in['Sex'].replace(['Female', 'Male'], [0, 1])
+      diabetic_category = {'No': 0, 'Yes': 1, 'No, borderline diabetes': 2, 'Yes (during pregnancy)': 3}
+      df_in['Diabetic'] = df_in['Diabetic'].map(diabetic_category)
+      age_category = {'18-24': 0, '25-29': 1, '30-34': 2, '35-39': 3, '40-44': 4, '45-49': 5, '50-54': 6, '55-59': 7, '60-64': 8, '65-69': 9, '70-74': 10, '75-79': 11, '80 or older': 12}
+      df_in['AgeCategory'] = df_in['AgeCategory'].map(age_category)
+      race_category = {'White': 0, 'Black': 1, 'Asian': 2, 'American Indian/Alaskan Native': 3, 'Hispanic': 4, 'Other': 5}
+      df_in['Race'] = df_in['Race'].map(race_category)
+      gen_health_category = {'Poor': 0, 'Fair': 1, 'Good': 2, 'Very good': 3, 'Excellent': 4}
+      df_in['GenHealth'] = df_in['GenHealth'].map(gen_health_category)
+      print(df_in)
+      try:
+        prediction = model.predict(df_in)[0]
+        prediction_proba = model.predict_proba(df_in)[0]
+        st.success(f"**Prediction:** {'Class 1' if prediction == 1 else 'Class 0'}")
+        st.write(f"Probability of Class 0: {prediction_proba[0]:.4f}")
+        st.write(f"Probability of Class 1: {prediction_proba[1]:.4f}")
+      except Exception as e:
+        st.error(f"An error occurred during prediction: {e}")
+        st.warning("Please ensure your inputs are valid and match the expected format.")
+
+
