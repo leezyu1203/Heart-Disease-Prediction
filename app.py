@@ -94,13 +94,16 @@ with st.form("form", enter_to_submit=False, border=False):
       hasNullDialog()
     else:
       true_false_cols = ['Smoking', 'AlcoholDrinking', 'PhysicalActivity', 'DiffWalking', 'Stroke', 'KidneyDisease', 'Asthma', 'SkinCancer']
-      df_in[true_false_cols] = df_in[true_false_cols].replace([True, False], [1, 0])
+      df_in[true_false_cols] = df_in[true_false_cols].replace([True, False], ["Yes", "No"])
       try:
         prediction = model.predict(df_in)[0]
         prediction_proba = model.predict_proba(df_in)[0]
-        st.success(f"**Prediction:** {'Class 1' if prediction == 1 else 'Class 0'}")
-        st.write(f"Probability of Class 0: {prediction_proba[0]:.4f}")
-        st.write(f"Probability of Class 1: {prediction_proba[1]:.4f}")
+        if prediction == 1:
+          st.error("**Prediction:** Heart Disease")
+        else:
+          st.success("**Prediction:** No Disease")
+        st.write(f"Probability of No Disease: {prediction_proba[0]:.4f}")
+        st.write(f"Probability of Heart Disease: {prediction_proba[1]:.4f}")
       except Exception as e:
         st.error(f"An error occurred during prediction: {e}")
         st.warning("Please ensure your inputs are valid and match the expected format.")
